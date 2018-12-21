@@ -223,7 +223,13 @@ RUN set -ex && \
     hexo init . && \
     npm install && \
     npm install hexo-generator-feed --save && \
-    npm install hexo-generator-searchdb --save
+    npm install hexo-generator-sitemap --save && \
+    npm install hexo-generator-searchdb --save && \
+    npm install hexo-symbols-count-time --save && \
+    npm install hexo-filter-github-emojis --save && \
+    npm install hexo-tag-aplayer --save && \
+    npm install hexo-tag-dplayer --save && \
+    npm install hexo-footnotes --save
 
 # theme NexT
 # NexT https://theme-next.iissnan.com/getting-started.html
