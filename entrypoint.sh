@@ -17,8 +17,13 @@ if [ ! -f "/opt/hexo/deploy.sh" ]; then
 	cp /var/lib/hexo/deploy.sh /opt/hexo
 fi
 
+if [ ! -f "/opt/hexo/gulp.js" ]; then
+	cp /var/lib/hexo/gulp.js /opt/hexo/gulp.js
+fi
+
 if [ ! -f "/opt/hexo/index.js" ]; then
 	cp /var/lib/hexo/index.js /opt/hexo/index.js
+
 	[ -z $WEBHOOK_SECRET ] && WEBHOOK_SECRET=123456
 	sed -i "s/WEBHOOK_SECRET/$WEBHOOK_SECRET/" /opt/hexo/index.js
 
