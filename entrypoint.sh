@@ -17,8 +17,8 @@ if [ ! -f "/opt/hexo/deploy.sh" ]; then
 	cp /var/lib/hexo/deploy.sh /opt/hexo
 fi
 
-if [ ! -f "/opt/hexo/gulp.js" ]; then
-	cp /var/lib/hexo/gulp.js /opt/hexo/gulp.js
+if [ ! -f "/opt/hexo/gulpfile.js" ]; then
+	cp /var/lib/hexo/gulpfile.js /opt/hexo/gulpfile.js
 fi
 
 if [ ! -f "/opt/hexo/index.js" ]; then
@@ -50,7 +50,7 @@ else
 	pm2 start index.js --name hexo
 	hexo clean && hexo g
 
-	if [ -f "/opt/hexo/gulp.js" ]; then
+	if [ -f "/opt/hexo/gulpfile.js" ]; then
 		gulp
 	fi
 fi
