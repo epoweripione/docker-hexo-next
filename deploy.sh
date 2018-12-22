@@ -13,7 +13,7 @@ echo "Generate and deploy..."
 cd /opt/hexo
 hexo clean && hexo g
 
-if [ ! -f "/opt/hexo/gulp.js" ]; then
+if [ -f "/opt/hexo/gulp.js" ]; then
     echo "gulp minify..."
     gulp
 fi
