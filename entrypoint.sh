@@ -56,8 +56,7 @@ else
 fi
 
 
-crond -b -L /var/log/crond.log
+# crond -b -L /var/log/crond.log
+# nginx -g "daemon off;"
 
-nginx -g "daemon off;"
-
-# exec "$@"
+exec "$@"
