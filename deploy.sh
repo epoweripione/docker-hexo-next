@@ -6,11 +6,16 @@ POSTS_PATH='/opt/hexo/source/_posts'
 echo "Start generation and deployment"
 cd $POSTS_PATH
 
-echo "pulling source code..."
+echo "Pulling source code..."
 git pull origin master
 
-echo "generate and deploy..."
+echo "Generate and deploy..."
 cd /opt/hexo
 hexo clean && hexo g
 
-echo "Finished."
+if [ ! -f "/opt/hexo/gulp.js" ]; then
+    echo "gulp minify..."
+    gulp
+fi
+
+echo "Deploy finished."
