@@ -5,14 +5,14 @@ var htmlmin = require('gulp-htmlmin');
 var htmlclean = require('gulp-htmlclean');
 
 // css
-gulp.task('minify-css', function() {
+function miniCSS() {
     return gulp.src('./public/**/*.css')
         .pipe(minifycss())
         .pipe(gulp.dest('./public'));
-});
+}
 
 // html
-gulp.task('minify-html', function() {
+function miniHTML() {
   return gulp.src('./public/**/*.html')
     .pipe(htmlclean())
     .pipe(htmlmin({
@@ -21,19 +21,22 @@ gulp.task('minify-html', function() {
         minifyCSS: true,
         minifyURLs: true,
     }))
-    .pipe(gulp.dest('./public'))
-});
+    .pipe(gulp.dest('./public'));
+}
 
 // js
-// gulp.task('minify-js', function() {
-//     return gulp.src('./public/**/*.js')
-//         .pipe(uglify())
-//         .pipe(gulp.dest('./public'));
-// });
+function miniJS() {
+    return gulp.src('./public/**/*.js')
+        .pipe(uglify())
+        .pipe(gulp.dest('./public'));
+}
+
+exports.miniHTML = miniHTML;
+exports.miniCSS = miniCSS;
+exports.miniJS = miniJS;
 
 // execute gulp task
-// gulp.task('default', [
-//     'minify-html','minify-css','minify-js'
-// ]);
+// gulp.task('default', gulp.series(miniHTML, miniCSS, miniJS));
+// gulp.task('default', gulp.parallel(miniHTML, miniCSS, miniJS));
 
-gulp.task('default', ['minify-html', 'minify-css']);
+gulp.task('default', gulp.parallel(miniHTML, miniCSS));
