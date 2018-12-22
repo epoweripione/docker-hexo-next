@@ -50,7 +50,7 @@ else
 	pm2 start index.js --name hexo
 	hexo clean && hexo g
 
-	if [ -f "/opt/hexo/gulpfile.js" ]; then
+	if [[ -d "/opt/hexo/public" && -f "/opt/hexo/gulpfile.js" ]]; then
 		gulp
 	fi
 fi
