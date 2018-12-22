@@ -264,6 +264,8 @@ RUN set -ex && \
 WORKDIR /opt/hexo
 
 COPY ./index.js /var/lib/hexo/index.js
+COPY ./gulp.js /var/lib/hexo/gulp.js
+
 COPY ./deploy.sh /var/lib/hexo/deploy.sh
 COPY ./entrypoint.sh /entrypoint.sh
 
