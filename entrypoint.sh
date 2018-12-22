@@ -30,6 +30,7 @@ if [ ! -f "/opt/hexo/index.js" ]; then
 	# Github webhook
 	if [ ! -z $GITHUB ]; then
 		npm install github-webhook-handler
+
 		sed -i "s/WEBHOOK-HANDLER/github-webhook-handler/" /opt/hexo/index.js
 		rm -rf /opt/hexo/source/_posts
 		git clone $GITHUB /opt/hexo/source/_posts
@@ -40,6 +41,7 @@ if [ ! -f "/opt/hexo/index.js" ]; then
 	# Gitlab webhook
 	if [ ! -z $GITLAB ]; then
 		npm install node-gitlab-webhook
+
 		sed -i "s/WEBHOOK-HANDLER/node-gitlab-webhook/" /opt/hexo/index.js
 		rm -rf /opt/hexo/source/_posts
 		git clone $GITLAB /opt/hexo/source/_posts
@@ -48,10 +50,15 @@ if [ ! -f "/opt/hexo/index.js" ]; then
 	fi
 else
 	pm2 start index.js --name hexo
-	hexo clean && hexo g
 
-	if [[ -d "/opt/hexo/public" && -f "/opt/hexo/gulpfile.js" ]]; then
-		gulp
+	if [ ! -d "/opt/hexo/public" ]; then
+		hexo clean && hexo g
+	fi
+
+	if [[ ! -z $GULP_MINIFY ]]; then
+		if [[ -d "/opt/hexo/public" && -f "/opt/hexo/gulpfile.js" ]]; then
+			gulp
+		fi
 	fi
 fi
 
