@@ -280,3 +280,5 @@ EXPOSE 5000
 STOPSIGNAL SIGTERM
 
 ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["nginx", "-g", "daemon off;"]
