@@ -3,7 +3,7 @@ FROM node:alpine
 LABEL Maintainer="Ansley Leung" \
       Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
       License="MIT License" \
-      Version="11.4.0"
+      Version="11.5.0"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
@@ -224,12 +224,7 @@ RUN set -ex && \
     npm install && \
     npm install hexo-generator-feed --save && \
     npm install hexo-generator-sitemap --save && \
-    npm install hexo-generator-searchdb --save && \
-    npm install hexo-symbols-count-time --save && \
-    npm install hexo-filter-github-emojis --save && \
-    npm install hexo-tag-aplayer --save && \
-    npm install hexo-tag-dplayer --save && \
-    npm install hexo-footnotes --save
+    npm install hexo-generator-searchdb --save
 
 # theme NexT
 # NexT https://theme-next.iissnan.com/getting-started.html
@@ -250,6 +245,21 @@ RUN set -ex && \
     git clone https://github.com/theme-next/theme-next-canvas-nest themes/next/source/lib/canvas-nest && \
     git clone https://github.com/theme-next/theme-next-three themes/next/source/lib/three && \
     git clone https://github.com/theme-next/theme-next-canvas-ribbon themes/next/source/lib/canvas-ribbon
+
+# other 
+RUN set -ex && \
+    cd /opt/hexo && \
+    npm install gulp -g && \
+    npm install gulp gulp-htmlclean gulp-htmlmin gulp-minify-css --save && \
+    npm install hexo-symbols-count-time --save && \
+    npm install hexo-filter-github-emojis --save && \
+    npm install hexo-tag-aplayer --save && \
+    npm install hexo-tag-dplayer --save && \
+    npm install hexo-footnotes --save && \
+    npm install hexo-filter-flowchart --save && \
+    npm uninstall hexo-generator-index --save && \
+    npm install hexo-generator-index-pin-top --save
+
 
 WORKDIR /opt/hexo
 
