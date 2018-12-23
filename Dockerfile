@@ -149,9 +149,6 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& ln -sf /dev/stdout /var/log/nginx/access.log \
 	&& ln -sf /dev/stderr /var/log/nginx/error.log
 
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
-
 
 # acme.sh
 ENV LE_WORKING_DIR=/opt/acme.sh
@@ -162,6 +159,7 @@ RUN set -ex && \
     crontab -l | sed "s|acme.sh --cron|acme.sh --cron --renew-hook \"nginx -s reload\"|g" | crontab - && \
     ln -s /opt/acme.sh/acme.sh /usr/bin/acme.sh && \
     rm -rf /tmp/* /var/cache/apk/*
+
 
 # # node
 # # https://github.com/mhart/alpine-node
@@ -228,7 +226,7 @@ RUN set -ex && \
 	npm install hexo-generator-sitemap --save && \
     npm install hexo-generator-searchdb --save
 
-# theme NexT
+# hexo theme NexT
 # NexT https://theme-next.iissnan.com/getting-started.html
 RUN set -ex && \
     apk add --no-cache git openssh && \
@@ -270,6 +268,9 @@ RUN set -ex && \
 
 
 WORKDIR /opt/hexo
+
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 
 COPY ./index.js /var/lib/hexo/index.js
 COPY ./gulpfile.js /var/lib/hexo/gulpfile.js
