@@ -12,7 +12,9 @@ RUN set -ex && \
 
 
 # nginx
-# https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
+# TLS1.3: https://github.com/khs1994-website/tls-1.3
+#         https://github.com/angristan/nginx-autoinstall
+# mainline: https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
 ENV NGINX_VERSION 1.15.7
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
@@ -77,7 +79,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		gd-dev \
 		geoip-dev \
 	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
-	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
+	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc -o nginx.tar.gz.asc \
 	&& export GNUPGHOME="$(mktemp -d)" \
 	&& found=''; \
 	for server in \
@@ -223,7 +225,7 @@ RUN set -ex && \
     hexo init . && \
     npm install && \
     npm install hexo-generator-feed --save && \
-    npm install hexo-generator-sitemap --save && \
+	npm install hexo-generator-sitemap --save && \
     npm install hexo-generator-searchdb --save
 
 # theme NexT
@@ -246,19 +248,25 @@ RUN set -ex && \
     git clone https://github.com/theme-next/theme-next-three themes/next/source/lib/three && \
     git clone https://github.com/theme-next/theme-next-canvas-ribbon themes/next/source/lib/canvas-ribbon
 
-# other 
+# other hexo plugins
 RUN set -ex && \
     cd /opt/hexo && \
     npm install gulp -g && \
     npm install gulp gulp-htmlclean gulp-htmlmin gulp-minify-css --save && \
-    npm install hexo-symbols-count-time --save && \
-    npm install hexo-filter-github-emojis --save && \
-    npm install hexo-tag-aplayer --save && \
-    npm install hexo-tag-dplayer --save && \
-    npm install hexo-footnotes --save && \
-    npm install hexo-filter-flowchart --save && \
-    npm uninstall hexo-generator-index --save && \
-    npm install hexo-generator-index-pin-top --save
+	npm install hexo-symbols-count-time --save && \
+	npm install hexo-filter-github-emojis --save && \
+	npm install hexo-tag-aplayer --save && \
+	npm install hexo-tag-dplayer --save && \
+	npm install hexo-footnotes --save && \
+	npm install hexo-filter-flowchart --save && \
+	npm uninstall hexo-generator-index --save && \
+	npm install hexo-generator-index-pin-top --save
+
+# deploy webhook plugins
+RUN set -ex && \
+    cd /opt/hexo && \
+	npm install github-webhook-handler && \
+	npm install node-gitlab-webhook
 
 
 WORKDIR /opt/hexo
