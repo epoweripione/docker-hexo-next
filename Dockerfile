@@ -277,7 +277,7 @@ COPY ./404.html /usr/share/nginx/html/404.html
 COPY ./svg404.html /usr/share/nginx/html/svg404.html
 COPY ./50x.html /usr/share/nginx/html/50x.html
 
-COPY ./nginxLogRotate /nginxLogRotate.sh
+COPY ./nginxLogRotate.sh /nginxLogRotate.sh
 
 # hexo files
 COPY ./index.js /var/lib/hexo/index.js
