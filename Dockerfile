@@ -15,7 +15,7 @@ RUN set -ex && \
 # TLS1.3: https://github.com/khs1994-website/tls-1.3
 #         https://github.com/angristan/nginx-autoinstall
 # mainline: https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.15.7
+ENV NGINX_VERSION 1.15.8
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
@@ -269,16 +269,26 @@ RUN set -ex && \
 
 WORKDIR /opt/hexo
 
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
+# nginx files
+COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY ./nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 
+COPY ./404.html /usr/share/nginx/html/404.html
+COPY ./svg404.html /usr/share/nginx/html/svg404.html
+COPY ./50x.html /usr/share/nginx/html/50x.html
+
+COPY ./nginxLogRotate /nginxLogRotate.sh
+
+# hexo files
 COPY ./index.js /var/lib/hexo/index.js
 COPY ./gulpfile.js /var/lib/hexo/gulpfile.js
 
 COPY ./deploy.sh /var/lib/hexo/deploy.sh
 COPY ./entrypoint.sh /entrypoint.sh
 
-RUN chmod +x /var/lib/hexo/deploy.sh /entrypoint.sh
+RUN set -ex && \
+    chmod +x /var/lib/hexo/deploy.sh /entrypoint.sh /nginxLogRotate.sh && \
+    (crontab -l 2>/dev/null || true; echo "0 0 * * * /nginxLogRotate.sh > /dev/null") | crontab -
 
 
 # Expose Ports
