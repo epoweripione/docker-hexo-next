@@ -286,9 +286,12 @@ COPY ./gulpfile.js /var/lib/hexo/gulpfile.js
 COPY ./deploy.sh /var/lib/hexo/deploy.sh
 COPY ./entrypoint.sh /entrypoint.sh
 
+# Add GNU coreutils for date to support -d options
 RUN set -ex && \
-    chmod +x /var/lib/hexo/deploy.sh /entrypoint.sh /nginxLogRotate.sh && \
-    (crontab -l 2>/dev/null || true; echo "0 0 * * * /nginxLogRotate.sh > /dev/null") | crontab -
+    apk add --update coreutils && \
+    chmod +x /nginxLogRotate.sh && \
+    (crontab -l 2>/dev/null || true; echo "0 0 * * * /nginxLogRotate.sh > /dev/null") | crontab - && \
+    rm -rf /tmp/* /var/cache/apk/*
 
 
 # Expose Ports
