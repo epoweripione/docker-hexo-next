@@ -3,7 +3,7 @@ FROM node:alpine
 LABEL Maintainer="Ansley Leung" \
       Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
       License="MIT License" \
-      Version="11.5.0"
+      Version="11.6.0"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
@@ -277,6 +277,7 @@ COPY ./404.html /usr/share/nginx/html/404.html
 COPY ./svg404.html /usr/share/nginx/html/svg404.html
 COPY ./50x.html /usr/share/nginx/html/50x.html
 
+COPY ./nginxBlocksIP.sh /nginxBlocksIP.sh
 COPY ./nginxLogRotate.sh /nginxLogRotate.sh
 
 # hexo files
@@ -289,6 +290,8 @@ COPY ./entrypoint.sh /entrypoint.sh
 # Add GNU coreutils for date to support -d options
 RUN set -ex && \
     apk add --update coreutils && \
+    touch /etc/nginx/snippets/BlocksIP.conf && \
+    chmod +x /nginxBlocksIP.sh && \
     chmod +x /nginxLogRotate.sh && \
     (crontab -l 2>/dev/null || true; echo "0 0 * * * /nginxLogRotate.sh > /dev/null") | crontab - && \
     rm -rf /tmp/* /var/cache/apk/*
