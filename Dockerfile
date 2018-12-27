@@ -290,6 +290,7 @@ COPY ./entrypoint.sh /entrypoint.sh
 # Add GNU coreutils for date to support -d options
 RUN set -ex && \
     apk add --update coreutils && \
+    mkdir -p /etc/nginx/snippets && \
     touch /etc/nginx/snippets/BlocksIP.conf && \
     chmod +x /nginxBlocksIP.sh && \
     chmod +x /nginxLogRotate.sh && \
