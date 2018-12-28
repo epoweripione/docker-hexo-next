@@ -292,8 +292,8 @@ RUN set -ex && \
     apk add --update coreutils && \
     mkdir -p /etc/nginx/snippets && \
     touch /etc/nginx/snippets/BlocksIP.conf && \
-    chmod +x /nginxBlocksIP.sh && \
-    chmod +x /nginxLogRotate.sh && \
+	chmod +x /var/lib/hexo/deploy.sh /entrypoint.sh && \
+    chmod +x /nginxBlocksIP.sh /nginxLogRotate.sh && \
     (crontab -l 2>/dev/null || true; echo "0 0 * * * /nginxLogRotate.sh > /dev/null") | crontab - && \
     rm -rf /tmp/* /var/cache/apk/*
 
