@@ -7,7 +7,7 @@ LABEL Maintainer="Ansley Leung" \
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
-    apk add --no-cache tzdata && \
+    apk add --no-cache tzdata ca-certificates curl openssl git && \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone
 
@@ -227,8 +227,6 @@ RUN set -ex && \
 # other hexo plugins
 RUN set -ex && \
     cd /opt/hexo && \
-    npm install gulp -g && \
-    npm install gulp gulp-htmlclean gulp-htmlmin gulp-minify-css --save && \
     npm install hexo-symbols-count-time --save && \
     npm install hexo-filter-github-emojis --save && \
     npm install hexo-tag-aplayer --save && \
