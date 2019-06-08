@@ -3,7 +3,7 @@ FROM node:alpine
 LABEL Maintainer="Ansley Leung" \
       Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
       License="MIT License" \
-      Version="12.3.1"
+      Version="12.4.0"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
@@ -16,11 +16,14 @@ RUN set -ex && \
 # TLS1.3: https://github.com/khs1994-website/tls-1.3
 #         https://github.com/angristan/nginx-autoinstall
 # mainline: https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.15.12
-ENV NJS_VERSION   0.3.1
-ENV PKG_RELEASE 1
+ENV NGINX_VERSION 1.17.0
+ENV NJS_VERSION   0.3.2
+ENV PKG_RELEASE   1
 
 RUN set -x \
+# create nginx user/group first, to be consistent throughout docker variants
+    && addgroup -g 101 -S nginx \
+    && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
     && apkArch="$(cat /etc/apk/arch)" \
     && nginxPackages=" \
         nginx=${NGINX_VERSION}-r${PKG_RELEASE} \
@@ -38,12 +41,12 @@ RUN set -x \
                 openssl curl ca-certificates \
             && curl -o /tmp/nginx_signing.rsa.pub https://nginx.org/keys/nginx_signing.rsa.pub \
             && if [ "$(openssl rsa -pubin -in /tmp/nginx_signing.rsa.pub -text -noout | openssl sha512 -r)" = "$KEY_SHA512" ]; then \
-                 echo "key verification succeeded!"; \
-                 mv /tmp/nginx_signing.rsa.pub /etc/apk/keys/; \
-               else \
-                 echo "key verification failed!"; \
-                 exit 1; \
-               fi \
+                echo "key verification succeeded!"; \
+                mv /tmp/nginx_signing.rsa.pub /etc/apk/keys/; \
+            else \
+                echo "key verification failed!"; \
+                exit 1; \
+            fi \
             && printf "%s%s%s\n" \
                 "http://nginx.org/packages/mainline/alpine/v" \
                 `egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release` \
@@ -74,7 +77,7 @@ RUN set -x \
                 bash \
                 alpine-sdk \
                 findutils \
-            && su - nobody -s /bin/sh -c " \
+            && su nobody -s /bin/sh -c " \
                 export HOME=${tempDir} \
                 && cd ${tempDir} \
                 && hg clone https://hg.nginx.org/pkg-oss \
