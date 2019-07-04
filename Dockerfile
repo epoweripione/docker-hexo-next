@@ -3,7 +3,7 @@ FROM node:alpine
 LABEL Maintainer="Ansley Leung" \
       Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
       License="MIT License" \
-      Version="12.4.0"
+      Version="12.6.0"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
@@ -16,8 +16,8 @@ RUN set -ex && \
 # TLS1.3: https://github.com/khs1994-website/tls-1.3
 #         https://github.com/angristan/nginx-autoinstall
 # mainline: https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.17.0
-ENV NJS_VERSION   0.3.2
+ENV NGINX_VERSION 1.17.1
+ENV NJS_VERSION   0.3.3
 ENV PKG_RELEASE   1
 
 RUN set -x \
@@ -38,8 +38,8 @@ RUN set -x \
             set -x \
             && KEY_SHA512="e7fa8303923d9b95db37a77ad46c68fd4755ff935d0a534d26eba83de193c76166c68bfe7f65471bf8881004ef4aa6df3e34689c305662750c0172fca5d8552a *stdin" \
             && apk add --no-cache --virtual .cert-deps \
-                openssl curl ca-certificates \
-            && curl -o /tmp/nginx_signing.rsa.pub https://nginx.org/keys/nginx_signing.rsa.pub \
+                openssl \
+            && wget -O /tmp/nginx_signing.rsa.pub https://nginx.org/keys/nginx_signing.rsa.pub \
             && if [ "$(openssl rsa -pubin -in /tmp/nginx_signing.rsa.pub -text -noout | openssl sha512 -r)" = "$KEY_SHA512" ]; then \
                 echo "key verification succeeded!"; \
                 mv /tmp/nginx_signing.rsa.pub /etc/apk/keys/; \
@@ -48,7 +48,7 @@ RUN set -x \
                 exit 1; \
             fi \
             && printf "%s%s%s\n" \
-                "http://nginx.org/packages/mainline/alpine/v" \
+                "https://nginx.org/packages/mainline/alpine/v" \
                 `egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release` \
                 "/main" \
             | tee -a /etc/apk/repositories \
@@ -217,7 +217,6 @@ RUN set -ex && \
     git clone https://github.com/theme-next/theme-next-jquery-lazyload themes/next/source/lib/jquery_lazyload && \
     git clone https://github.com/theme-next/theme-next-pace themes/next/source/lib/pace && \
     git clone https://github.com/theme-next/theme-next-pdf themes/next/source/lib/pdf && \
-    git clone https://github.com/theme-next/theme-next-han themes/next/source/lib/Han && \
     git clone https://github.com/theme-next/theme-next-pangu themes/next/source/lib/pangu && \
     git clone https://github.com/theme-next/theme-next-needmoreshare2 themes/next/source/lib/needsharebutton && \
     git clone https://github.com/theme-next/theme-next-bookmark themes/next/source/lib/bookmark && \
