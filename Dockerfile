@@ -3,25 +3,34 @@ FROM node:alpine
 LABEL Maintainer="Ansley Leung" \
       Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
       License="MIT License" \
-      Version="12.10.0"
+      Version="12.11.1"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
-    apk add --no-cache tzdata ca-certificates curl openssl git && \
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
-    echo $TZ > /etc/timezone
+    apk update && \
+    apk upgrade && \
+    apk add --no-cache tzdata && \
+    # ln -snf /usr/share/zoneinfo/ /etc/localtime && \
+    cp /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone && \
+    apk del tzdata && \
+    rm -rf /tmp/* /var/cache/apk/*
+
+RUN set -ex && \
+    apk add --no-cache coreutils ca-certificates curl openssl git openssh && \
+    rm -rf /tmp/* /var/cache/apk/*
 
 
 # nginx
 # TLS1.3: https://github.com/khs1994-website/tls-1.3
 #         https://github.com/angristan/nginx-autoinstall
 # mainline: https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.17.3
+ENV NGINX_VERSION 1.17.4
 ENV NJS_VERSION   0.3.5
 ENV PKG_RELEASE   1
 
 RUN set -x \
-# create nginx user/group first, to be consistent throughout docker variants
+    # create nginx user/group first, to be consistent throughout docker variants
     && addgroup -g 101 -S nginx \
     && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
     && apkArch="$(cat /etc/apk/arch)" \
@@ -34,7 +43,7 @@ RUN set -x \
     " \
     && case "$apkArch" in \
         x86_64) \
-# arches officially built by upstream
+            # arches officially built by upstream
             set -x \
             && KEY_SHA512="e7fa8303923d9b95db37a77ad46c68fd4755ff935d0a534d26eba83de193c76166c68bfe7f65471bf8881004ef4aa6df3e34689c305662750c0172fca5d8552a *stdin" \
             && apk add --no-cache --virtual .cert-deps \
@@ -55,8 +64,8 @@ RUN set -x \
             && apk del .cert-deps \
             ;; \
         *) \
-# we're on an architecture upstream doesn't officially build for
-# let's build binaries from the published packaging sources
+        # we're on an architecture upstream doesn't officially build for
+        # let's build binaries from the published packaging sources
             set -x \
             && tempDir="$(mktemp -d)" \
             && chown nobody:nobody $tempDir \
@@ -82,7 +91,7 @@ RUN set -x \
                 && cd ${tempDir} \
                 && hg clone https://hg.nginx.org/pkg-oss \
                 && cd pkg-oss \
-                && hg up -r 428 \
+                && hg up ${NGINX_VERSION}-${PKG_RELEASE} \
                 && cd alpine \
                 && make all \
                 && apk index -o ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz ${tempDir}/packages/alpine/${apkArch}/*.apk \
@@ -94,16 +103,16 @@ RUN set -x \
             ;; \
     esac \
     && apk add --no-cache $nginxPackages \
-# if we have leftovers from building, let's purge them (including extra, unnecessary build deps)
+    # if we have leftovers from building, let's purge them (including extra, unnecessary build deps)
     && if [ -n "$tempDir" ]; then rm -rf "$tempDir"; fi \
     && if [ -n "/etc/apk/keys/abuild-key.rsa.pub" ]; then rm -f /etc/apk/keys/abuild-key.rsa.pub; fi \
     && if [ -n "/etc/apk/keys/nginx_signing.rsa.pub" ]; then rm -f /etc/apk/keys/nginx_signing.rsa.pub; fi \
-# remove the last line with the packages repos in the repositories file
+    # remove the last line with the packages repos in the repositories file
     && sed -i '$ d' /etc/apk/repositories \
-# Bring in gettext so we can get `envsubst`, then throw
-# the rest away. To do this, we need to install `gettext`
-# then move `envsubst` out of the way so `gettext` can
-# be deleted completely, then move `envsubst` back.
+    # Bring in gettext so we can get `envsubst`, then throw
+    # the rest away. To do this, we need to install `gettext`
+    # then move `envsubst` out of the way so `gettext` can
+    # be deleted completely, then move `envsubst` back.
     && apk add --no-cache --virtual .gettext gettext \
     && mv /usr/bin/envsubst /tmp/ \
     \
@@ -117,10 +126,10 @@ RUN set -x \
     && apk add --no-cache $runDeps \
     && apk del .gettext \
     && mv /tmp/envsubst /usr/local/bin/ \
-# Bring in tzdata so users could set the timezones through the environment
-# variables
+    # Bring in tzdata so users could set the timezones through the environment
+    # variables
     && apk add --no-cache tzdata \
-# forward request and error logs to docker log collector
+    # forward request and error logs to docker log collector
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log
 
@@ -129,7 +138,6 @@ RUN set -x \
 ENV LE_WORKING_DIR=/opt/acme.sh
 
 RUN set -ex && \
-    apk add --no-cache ca-certificates curl openssl && \
     curl -sSL https://get.acme.sh | sh && \
     crontab -l | sed "s|acme.sh --cron|acme.sh --cron --renew-hook \"nginx -s reload\"|g" | crontab - && \
     ln -s /opt/acme.sh/acme.sh /usr/bin/acme.sh && \
@@ -208,8 +216,6 @@ RUN set -ex && \
 # hexo theme NexT
 # NexT https://theme-next.iissnan.com/getting-started.html
 RUN set -ex && \
-    apk add --no-cache git openssh && \
-    rm -rf /tmp/* /var/cache/apk/* && \
     cd /opt/hexo && \
     git clone https://github.com/theme-next/hexo-theme-next themes/next && \
     git clone https://github.com/theme-next/theme-next-fancybox3 themes/next/source/lib/fancybox && \
@@ -229,19 +235,31 @@ RUN set -ex && \
 # other hexo plugins
 RUN set -ex && \
     cd /opt/hexo && \
+    # npm install gulp -g && \
+    # npm install gulp gulp-htmlclean gulp-htmlmin gulp-minify-css --save && \
     npm install hexo-symbols-count-time --save && \
-    npm install hexo-filter-github-emojis --save && \
     npm install hexo-tag-aplayer --save && \
     npm install hexo-tag-dplayer --save && \
     npm install hexo-footnotes --save && \
-    npm install hexo-filter-flowchart --save && \
+    npm install hexo-filter-flowchart --save
+
+# Awesome NexT
+# https://github.com/theme-next/awesome-next
+RUN set -ex && \
+    cd /opt/hexo && \
+    npm install hexo-filter-emoji --save && \
+    npm install hexo-filter-optimize --save && \
+    npm install hexo-filter-mathjax --save && \
+    : && \
     npm uninstall hexo-generator-index --save && \
-    npm install hexo-generator-index-pin-top --save
+    # npm install hexo-generator-index-pin-top --save && \
+    npm install hexo-generator-indexed --save
 
 # deploy webhook plugins
 RUN set -ex && \
     cd /opt/hexo && \
     npm install github-webhook-handler && \
+    npm install gogs-webhook-handler && \
     npm install node-gitlab-webhook
 
 
