@@ -1,9 +1,9 @@
-FROM node:alpine
+FROM node:12-alpine
 
 LABEL Maintainer="Ansley Leung" \
       Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
       License="MIT License" \
-      Version="12.12.0"
+      Version="12.13.0"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
@@ -25,8 +25,8 @@ RUN set -ex && \
 # TLS1.3: https://github.com/khs1994-website/tls-1.3
 #         https://github.com/angristan/nginx-autoinstall
 # mainline: https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.17.4
-ENV NJS_VERSION   0.3.5
+ENV NGINX_VERSION 1.17.5
+ENV NJS_VERSION   0.3.6
 ENV PKG_RELEASE   1
 
 RUN set -x \
@@ -208,10 +208,7 @@ RUN set -ex && \
     mkdir -p /opt/hexo /var/lib/hexo && \
     cd /opt/hexo && \
     hexo init . && \
-    npm install && \
-    npm install hexo-generator-feed --save && \
-    npm install hexo-generator-sitemap --save && \
-    npm install hexo-generator-searchdb --save
+    npm install
 
 # hexo theme NexT
 # NexT https://theme-next.iissnan.com/getting-started.html
@@ -250,6 +247,10 @@ RUN set -ex && \
     npm install hexo-filter-emoji --save && \
     npm install hexo-filter-optimize --save && \
     npm install hexo-filter-mathjax --save && \
+    : && \
+    npm install hexo-generator-feed --save && \
+    npm install hexo-generator-sitemap --save && \
+    npm install hexo-generator-searchdb --save && \
     : && \
     npm uninstall hexo-generator-index --save && \
     # npm install hexo-generator-index-pin-top --save && \
