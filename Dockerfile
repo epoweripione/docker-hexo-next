@@ -30,7 +30,7 @@ ENV NJS_VERSION   0.3.6
 ENV PKG_RELEASE   1
 
 RUN set -x \
-    # create nginx user/group first, to be consistent throughout docker variants
+# create nginx user/group first, to be consistent throughout docker variants
     && addgroup -g 101 -S nginx \
     && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
     && apkArch="$(cat /etc/apk/arch)" \
@@ -43,7 +43,7 @@ RUN set -x \
     " \
     && case "$apkArch" in \
         x86_64) \
-            # arches officially built by upstream
+# arches officially built by upstream
             set -x \
             && KEY_SHA512="e7fa8303923d9b95db37a77ad46c68fd4755ff935d0a534d26eba83de193c76166c68bfe7f65471bf8881004ef4aa6df3e34689c305662750c0172fca5d8552a *stdin" \
             && apk add --no-cache --virtual .cert-deps \
@@ -56,16 +56,12 @@ RUN set -x \
                 echo "key verification failed!"; \
                 exit 1; \
             fi \
-            && printf "%s%s%s\n" \
-                "https://nginx.org/packages/mainline/alpine/v" \
-                `egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release` \
-                "/main" \
-            | tee -a /etc/apk/repositories \
             && apk del .cert-deps \
+            && apk add -X "https://nginx.org/packages/mainline/alpine/v$(egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release)/main" --no-cache $nginxPackages \
             ;; \
         *) \
-        # we're on an architecture upstream doesn't officially build for
-        # let's build binaries from the published packaging sources
+# we're on an architecture upstream doesn't officially build for
+# let's build binaries from the published packaging sources
             set -x \
             && tempDir="$(mktemp -d)" \
             && chown nobody:nobody $tempDir \
@@ -97,22 +93,19 @@ RUN set -x \
                 && apk index -o ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz ${tempDir}/packages/alpine/${apkArch}/*.apk \
                 && abuild-sign -k ${tempDir}/.abuild/abuild-key.rsa ${tempDir}/packages/alpine/${apkArch}/APKINDEX.tar.gz \
                 " \
-            && echo "${tempDir}/packages/alpine/" >> /etc/apk/repositories \
             && cp ${tempDir}/.abuild/abuild-key.rsa.pub /etc/apk/keys/ \
             && apk del .build-deps \
+            && apk add -X ${tempDir}/packages/alpine/ --no-cache $nginxPackages \
             ;; \
     esac \
-    && apk add --no-cache $nginxPackages \
-    # if we have leftovers from building, let's purge them (including extra, unnecessary build deps)
+# if we have leftovers from building, let's purge them (including extra, unnecessary build deps)
     && if [ -n "$tempDir" ]; then rm -rf "$tempDir"; fi \
     && if [ -n "/etc/apk/keys/abuild-key.rsa.pub" ]; then rm -f /etc/apk/keys/abuild-key.rsa.pub; fi \
     && if [ -n "/etc/apk/keys/nginx_signing.rsa.pub" ]; then rm -f /etc/apk/keys/nginx_signing.rsa.pub; fi \
-    # remove the last line with the packages repos in the repositories file
-    && sed -i '$ d' /etc/apk/repositories \
-    # Bring in gettext so we can get `envsubst`, then throw
-    # the rest away. To do this, we need to install `gettext`
-    # then move `envsubst` out of the way so `gettext` can
-    # be deleted completely, then move `envsubst` back.
+# Bring in gettext so we can get `envsubst`, then throw
+# the rest away. To do this, we need to install `gettext`
+# then move `envsubst` out of the way so `gettext` can
+# be deleted completely, then move `envsubst` back.
     && apk add --no-cache --virtual .gettext gettext \
     && mv /usr/bin/envsubst /tmp/ \
     \
@@ -126,10 +119,10 @@ RUN set -x \
     && apk add --no-cache $runDeps \
     && apk del .gettext \
     && mv /tmp/envsubst /usr/local/bin/ \
-    # Bring in tzdata so users could set the timezones through the environment
-    # variables
+# Bring in tzdata so users could set the timezones through the environment
+# variables
     && apk add --no-cache tzdata \
-    # forward request and error logs to docker log collector
+# forward request and error logs to docker log collector
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log
 
@@ -146,10 +139,10 @@ RUN set -ex && \
 
 # # node
 # # https://github.com/mhart/alpine-node
-# ENV VERSION=v11.11.0 NPM_VERSION=6 YARN_VERSION=latest
+# ENV VERSION=v12.13.0 NPM_VERSION=6 YARN_VERSION=latest
 
 # # For base builds
-# ENV CONFIG_FLAGS="--fully-static --without-npm" DEL_PKGS="libstdc++" RM_DIRS=/usr/include
+# # ENV CONFIG_FLAGS="--fully-static --without-npm" DEL_PKGS="libstdc++" RM_DIRS=/usr/include
 
 # RUN apk add --no-cache curl make gcc g++ python linux-headers binutils-gold gnupg libstdc++ && \
 #   for server in ipv4.pool.sks-keyservers.net keyserver.pgp.com ha.pool.sks-keyservers.net; do \
@@ -195,9 +188,9 @@ RUN set -ex && \
 #     fi; \
 #   fi && \
 #   apk del curl make gcc g++ python linux-headers binutils-gold gnupg ${DEL_PKGS} && \
-#   rm -rf ${RM_DIRS} /node-${VERSION}* /SHASUMS256.txt /usr/share/man /tmp/* /var/cache/apk/* \
-#     /root/.npm /root/.node-gyp /usr/lib/node_modules/npm/man \
-#     /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/html /usr/lib/node_modules/npm/scripts && \
+#   rm -rf ${RM_DIRS} /node-${VERSION}* /SHASUMS256.txt /tmp/* /var/cache/apk/* \
+#     /usr/share/man/* /usr/share/doc /root/.npm /root/.node-gyp /root/.config \
+#     /usr/lib/node_modules/npm/man /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/html /usr/lib/node_modules/npm/scripts && \
 #   { rm -rf /root/.gnupg || true; }
 
 
@@ -215,26 +208,17 @@ RUN set -ex && \
 RUN set -ex && \
     cd /opt/hexo && \
     git clone https://github.com/theme-next/hexo-theme-next themes/next && \
-    git clone https://github.com/theme-next/theme-next-fancybox3 themes/next/source/lib/fancybox && \
-    git clone https://github.com/theme-next/theme-next-fastclick themes/next/source/lib/fastclick && \
-    git clone https://github.com/theme-next/theme-next-jquery-lazyload themes/next/source/lib/jquery_lazyload && \
     git clone https://github.com/theme-next/theme-next-pace themes/next/source/lib/pace && \
     git clone https://github.com/theme-next/theme-next-pdf themes/next/source/lib/pdf && \
-    git clone https://github.com/theme-next/theme-next-pangu themes/next/source/lib/pangu && \
-    git clone https://github.com/theme-next/theme-next-needmoreshare2 themes/next/source/lib/needsharebutton && \
-    git clone https://github.com/theme-next/theme-next-bookmark themes/next/source/lib/bookmark && \
     git clone https://github.com/theme-next/theme-next-canvas-nest themes/next/source/lib/canvas-nest && \
     git clone https://github.com/theme-next/theme-next-three themes/next/source/lib/three && \
-    git clone https://github.com/theme-next/theme-next-canvas-ribbon themes/next/source/lib/canvas-ribbon && \
-    git clone https://github.com/theme-next/theme-next-quicklink themes/next/source/lib/quicklink && \
-    git clone https://github.com/theme-next/theme-next-reading-progress themes/next/source/lib/reading_progress
+    git clone https://github.com/theme-next/theme-next-canvas-ribbon themes/next/source/lib/canvas-ribbon
 
 # other hexo plugins
 RUN set -ex && \
     cd /opt/hexo && \
     # npm install gulp -g && \
     # npm install gulp gulp-htmlclean gulp-htmlmin gulp-minify-css --save && \
-    npm install hexo-symbols-count-time --save && \
     npm install hexo-tag-aplayer --save && \
     npm install hexo-tag-dplayer --save && \
     npm install hexo-footnotes --save && \
@@ -247,14 +231,27 @@ RUN set -ex && \
     npm install hexo-filter-emoji --save && \
     npm install hexo-filter-optimize --save && \
     npm install hexo-filter-mathjax --save && \
+    npm install hexo-symbols-count-time --save && \
     : && \
     npm install hexo-generator-feed --save && \
-    npm install hexo-generator-sitemap --save && \
+    # npm install hexo-generator-sitemap --save && \
+    npm install hexo-generator-seo-friendly-sitemap --save && \
     npm install hexo-generator-searchdb --save && \
     : && \
     npm uninstall hexo-generator-index --save && \
     # npm install hexo-generator-index-pin-top --save && \
-    npm install hexo-generator-indexed --save
+    npm install hexo-generator-indexed --save && \
+    # : && \
+    # npm install hexo-renderer-njks --save && \
+    : && \
+    npm install theme-next/theme-next-calendar --save && \
+    npm install theme-next/hexo-next-coauthor --save && \
+    npm install theme-next/hexo-next-utteranc --save && \
+    npm install theme-next/hexo-next-share --save && \
+    npm install theme-next/hexo-next-title --save && \
+    # npm install hexo-theme-next-anchor --save && \
+    npm install hexo-cake-moon-menu --save && \
+    npm install 1v9/hexo-next-nightmode --save
 
 # deploy webhook plugins
 RUN set -ex && \
