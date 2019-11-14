@@ -250,7 +250,7 @@ RUN set -ex && \
     npm install theme-next/hexo-next-share --save && \
     npm install theme-next/hexo-next-title --save && \
     # npm install hexo-theme-next-anchor --save && \
-    npm install hexo-cake-moon-menu --save && \
+    # npm install hexo-cake-moon-menu --save && \
     npm install 1v9/hexo-next-nightmode --save
 
 # deploy webhook plugins
