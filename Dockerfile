@@ -219,10 +219,14 @@ RUN set -ex && \
     cd /opt/hexo && \
     # npm install gulp -g && \
     # npm install gulp gulp-htmlclean gulp-htmlmin gulp-minify-css --save && \
+    : && \
     npm install hexo-tag-aplayer --save && \
     npm install hexo-tag-dplayer --save && \
-    npm install hexo-footnotes --save && \
-    npm install hexo-filter-flowchart --save
+    npm install hexo-filter-flowchart --save && \
+    : && \
+    npm uninstall hexo-renderer-marked --save && \
+    npm install hexo-renderer-markdown-it --save
+
 
 # Awesome NexT
 # https://github.com/theme-next/awesome-next
@@ -283,7 +287,6 @@ COPY ./entrypoint.sh /entrypoint.sh
 
 # Add GNU coreutils for date to support -d options
 RUN set -ex && \
-    apk add --no-cache coreutils && \
     mkdir -p /etc/nginx/snippets && \
     touch /etc/nginx/snippets/BlocksIP.conf && \
     chmod +x /var/lib/hexo/deploy.sh /entrypoint.sh && \
