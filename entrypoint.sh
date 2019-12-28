@@ -24,42 +24,35 @@ fi
 if [ ! -f "/opt/hexo/index.js" ]; then
 	cp /var/lib/hexo/index.js /opt/hexo/index.js
 
-	[ -z $WEBHOOK_SECRET ] && WEBHOOK_SECRET=123456
+	[ -z "$WEBHOOK_SECRET" ] && WEBHOOK_SECRET=123456
 	sed -i "s/WEBHOOK_SECRET/$WEBHOOK_SECRET/" /opt/hexo/index.js
 
 	# Github webhook
-	if [ ! -z $GITHUB ]; then
+	if [ -n "$GITHUB" ]; then
 		# npm install github-webhook-handler
 		sed -i "s/WEBHOOK-HANDLER/github-webhook-handler/" /opt/hexo/index.js
 		rm -rf /opt/hexo/source/_posts
-		git clone $GITHUB /opt/hexo/source/_posts
+		git clone "$GITHUB" /opt/hexo/source/_posts
 		pm2 start index.js --name hexo
 		/opt/hexo/deploy.sh
 	fi
 
 	# Gitlab webhook
-	if [ ! -z $GITLAB ]; then
+	if [ -n "$GITLAB" ]; then
 		# npm install node-gitlab-webhook
 		sed -i "s/WEBHOOK-HANDLER/node-gitlab-webhook/" /opt/hexo/index.js
 		rm -rf /opt/hexo/source/_posts
-		git clone $GITLAB /opt/hexo/source/_posts
+		git clone "$GITLAB" /opt/hexo/source/_posts
 		pm2 start index.js --name hexo
 		/opt/hexo/deploy.sh
 	fi
 else
 	pm2 start index.js --name hexo
-
-	if [ ! -d "/opt/hexo/public" ]; then
-		hexo clean && hexo g
-	fi
-
-	if [[ ! -z $GULP_MINIFY ]]; then
-		if [[ -d "/opt/hexo/public" && -f "/opt/hexo/gulpfile.js" ]]; then
-			gulp
-		fi
-	fi
 fi
 
+if [ ! -d "/opt/hexo/public" ]; then
+	/opt/hexo/deploy.sh
+fi
 
 # crond -b -L /var/log/crond.log
 # nginx -g "daemon off;"
