@@ -54,6 +54,10 @@ if [ ! -d "/opt/hexo/public" ]; then
 	/opt/hexo/deploy.sh
 fi
 
+if [ ! -s "/opt/hexo/public/index.html" ]; then
+	/opt/hexo/deploy.sh
+fi
+
 # crond -b -L /var/log/crond.log
 # nginx -g "daemon off;"
 
