@@ -3,7 +3,7 @@ FROM node:12-alpine
 LABEL Maintainer="Ansley Leung" \
       Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
       License="MIT License" \
-      Version="12.13.1"
+      Version="12.14.0"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
@@ -25,7 +25,7 @@ RUN set -ex && \
 # TLS1.3: https://github.com/khs1994-website/tls-1.3
 #         https://github.com/angristan/nginx-autoinstall
 # mainline: https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.17.6
+ENV NGINX_VERSION 1.17.7
 ENV NJS_VERSION   0.3.7
 ENV PKG_RELEASE   1
 
