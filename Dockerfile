@@ -3,7 +3,7 @@ FROM node:12-alpine3.10
 LABEL Maintainer="Ansley Leung" \
       Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
       License="MIT License" \
-      Version="12.14.0"
+      Version="12.14.1"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
@@ -255,7 +255,8 @@ RUN set -ex && \
     npm install theme-next/hexo-next-title --save && \
     # npm install hexo-theme-next-anchor --save && \
     # npm install hexo-cake-moon-menu --save && \
-    npm install 1v9/hexo-next-nightmode --save
+    npm install 1v9/hexo-next-nightmode --save && \
+    npm install theme-next/hexo-next-exif --save
 
 # deploy webhook plugins
 RUN set -ex && \
