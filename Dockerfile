@@ -25,8 +25,8 @@ RUN set -ex && \
 # TLS1.3: https://github.com/khs1994-website/tls-1.3
 #         https://github.com/angristan/nginx-autoinstall
 # mainline: https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.17.7
-ENV NJS_VERSION   0.3.7
+ENV NGINX_VERSION 1.17.8
+ENV NJS_VERSION   0.3.8
 ENV PKG_RELEASE   1
 
 RUN set -x \
