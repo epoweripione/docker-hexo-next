@@ -3,7 +3,7 @@ FROM node:12-alpine3.11
 LABEL Maintainer="Ansley Leung" \
       Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
       License="MIT License" \
-      Version="12.16.2"
+      Version="12.16.3"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
@@ -235,11 +235,13 @@ RUN set -ex && \
 
 # Awesome NexT
 # https://github.com/theme-next/awesome-next
+
 RUN set -ex && \
     cd /opt/hexo && \
     npm install hexo-filter-emoji --save && \
     npm install hexo-filter-optimize --save && \
     npm install hexo-filter-mathjax --save && \
+    npm install hexo-pangu --save && \
     npm install hexo-symbols-count-time --save && \
     : && \
     npm install hexo-generator-feed --save && \
@@ -257,9 +259,12 @@ RUN set -ex && \
     npm install theme-next/hexo-next-coauthor --save && \
     npm install theme-next/hexo-next-utteranc --save && \
     npm install theme-next/hexo-next-share --save && \
+    npm install theme-next/theme-next-tag --save && \
     npm install theme-next/hexo-next-title --save && \
     # npm install hexo-theme-next-anchor --save && \
     # npm install hexo-cake-moon-menu --save && \
+    # npm install hexo-disqus-php-api --save && \
+    # npm install hexo-next-minivaline --save && \
     npm install 1v9/hexo-next-nightmode --save && \
     npm install theme-next/hexo-next-exif --save
 
