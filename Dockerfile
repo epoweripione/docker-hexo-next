@@ -259,7 +259,7 @@ RUN set -ex && \
     npm install theme-next/hexo-next-coauthor --save && \
     npm install theme-next/hexo-next-utteranc --save && \
     npm install theme-next/hexo-next-share --save && \
-    npm install theme-next/theme-next-tag --save && \
+    # npm install theme-next/theme-next-tag --save && \
     npm install theme-next/hexo-next-title --save && \
     # npm install hexo-theme-next-anchor --save && \
     # npm install hexo-cake-moon-menu --save && \
