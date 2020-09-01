@@ -1,32 +1,31 @@
-FROM node:12-alpine3.11
+FROM node:12-alpine3.12
 
 LABEL Maintainer="Ansley Leung" \
-      Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
-      License="MIT License" \
-      Version="12.16.3"
+    Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
+    License="MIT License" \
+    Version="12.18.3"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
+    # sed -i 's|http://dl-cdn.alpinelinux.org|https://mirrors.ustc.edu.cn|g' /etc/apk/repositories && \
     apk update && \
     apk upgrade && \
-    apk add --no-cache tzdata && \
+    apk add --no-cache coreutils ca-certificates curl openssl git openssh tzdata && \
     # ln -snf /usr/share/zoneinfo/ /etc/localtime && \
     cp /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone && \
     apk del tzdata && \
-    rm -rf /tmp/* /var/cache/apk/*
-
-RUN set -ex && \
-    apk add --no-cache coreutils ca-certificates curl openssl git openssh && \
+    npm set registry https://registry.npm.taobao.org && \
+    # PROXY_ADDRESS="127.0.0.1:1080" && \
+    # git config --global http.proxy "socks5://${PROXY_ADDRESS}" && \
+    # git config --global https.proxy "socks5://${PROXY_ADDRESS}" && \
     rm -rf /tmp/* /var/cache/apk/*
 
 
 # nginx
-# TLS1.3: https://github.com/khs1994-website/tls-1.3
-#         https://github.com/angristan/nginx-autoinstall
 # mainline: https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.17.10
-ENV NJS_VERSION   0.4.0
+ENV NGINX_VERSION 1.19.2
+ENV NJS_VERSION   0.4.3
 ENV PKG_RELEASE   1
 
 RUN set -x \
@@ -127,9 +126,8 @@ RUN set -x \
 # forward request and error logs to docker log collector
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log \
-# make default server listen on ipv6
-    && sed -i -E 's,listen       80;,listen       80;\n    listen  [::]:80;,' \
-        /etc/nginx/conf.d/default.conf
+# create a docker-entrypoint.d directory
+    && mkdir /docker-entrypoint.d
 
 
 # acme.sh
@@ -144,7 +142,7 @@ RUN set -ex && \
 
 # # node
 # # https://github.com/mhart/alpine-node
-# ENV VERSION=v12.13.0 NPM_VERSION=6 YARN_VERSION=latest
+# ENV VERSION=v12.18.3 NPM_VERSION=6 YARN_VERSION=latest
 
 # # For base builds
 # # ENV CONFIG_FLAGS="--fully-static --without-npm" DEL_PKGS="libstdc++" RM_DIRS=/usr/include
@@ -212,12 +210,8 @@ RUN set -ex && \
 # NexT https://theme-next.iissnan.com/getting-started.html
 RUN set -ex && \
     cd /opt/hexo && \
-    git clone https://github.com/theme-next/hexo-theme-next themes/next && \
-    git clone https://github.com/theme-next/theme-next-pace themes/next/source/lib/pace && \
-    git clone https://github.com/theme-next/theme-next-pdf themes/next/source/lib/pdf && \
-    git clone https://github.com/theme-next/theme-next-canvas-nest themes/next/source/lib/canvas-nest && \
-    git clone https://github.com/theme-next/theme-next-three themes/next/source/lib/three && \
-    git clone https://github.com/theme-next/theme-next-canvas-ribbon themes/next/source/lib/canvas-ribbon
+    git clone --depth=1 https://github.com/next-theme/hexo-theme-next themes/next && \
+    git clone --depth=1 https://github.com/next-theme/theme-next-pdf themes/next/source/lib/pdf
 
 # other hexo plugins
 RUN set -ex && \
@@ -230,43 +224,66 @@ RUN set -ex && \
     npm install hexo-filter-flowchart --save && \
     : && \
     npm uninstall hexo-renderer-marked --save && \
-    npm install hexo-renderer-markdown-it --save
+    npm install hexo-renderer-markdown-it --save && \
+    : && \
+    npm install markdown-it-abbr --save && \
+    npm install markdown-it-footnote --save && \
+    npm install markdown-it-ins --save && \
+    npm install markdown-it-sub --save && \
+    npm install markdown-it-sup --save && \
+    npm install markdown-it-deflist --save && \
+    npm install markdown-it-emoji --save && \
+    npm install markdown-it-container --save && \
+    npm install markdown-it-mark --save && \
+    npm install markdown-it-anchor --save && \
+    npm install markdown-it-multimd-table --save && \
+    npm install markdown-it-replace-link --save && \
+    npm install markdown-it-toc-and-anchor --save && \
+    npm install markdown-it-task-lists --save && \
+    npm install markdown-it-katex --save && \
+    npm install @gerhobbelt/markdown-it-html5-embed --save
 
 
 # Awesome NexT
-# https://github.com/theme-next/awesome-next
-
+# https://github.com/next-theme/awesome-next
 RUN set -ex && \
     cd /opt/hexo && \
+    npm install @next-theme/plugins --save && \
+    npm install @next-theme/utils --save && \
+    : && \
+    # Hexo Plugins
+    npm install hexo-optimize --save && \
+    npm install hexo-generator-searchdb --save && \
     npm install hexo-filter-emoji --save && \
-    npm install hexo-filter-optimize --save && \
-    npm install hexo-filter-mathjax --save && \
     npm install hexo-pangu --save && \
+    npm install hexo-filter-mathjax --save && \
+    : && \
+    npm install hexo-word-counter --save && \
     npm install hexo-symbols-count-time --save && \
     : && \
     npm install hexo-generator-feed --save && \
-    # npm install hexo-generator-sitemap --save && \
     npm install hexo-generator-seo-friendly-sitemap --save && \
-    npm install hexo-generator-searchdb --save && \
-    : && \
-    npm uninstall hexo-generator-index --save && \
-    # npm install hexo-generator-index-pin-top --save && \
     npm install hexo-generator-indexed --save && \
-    # : && \
-    # npm install hexo-renderer-njks --save && \
     : && \
-    npm install theme-next/theme-next-calendar --save && \
-    npm install theme-next/hexo-next-coauthor --save && \
-    npm install theme-next/hexo-next-utteranc --save && \
-    npm install theme-next/hexo-next-share --save && \
-    # npm install theme-next/theme-next-tag --save && \
-    npm install theme-next/hexo-next-title --save && \
-    # npm install hexo-theme-next-anchor --save && \
-    # npm install hexo-cake-moon-menu --save && \
-    # npm install hexo-disqus-php-api --save && \
-    # npm install hexo-next-minivaline --save && \
-    npm install 1v9/hexo-next-nightmode --save && \
-    npm install theme-next/hexo-next-exif --save
+    # Widgets
+    # npm install theme-next/theme-next-calendar --save && \
+    : && \
+    # Fancy stuff
+    npm install next-theme/hexo-next-three --save && \
+    npm install next-theme/hexo-next-fireworks --save && \
+    # npm install theme-next/hexo-next-title --save && \
+    npm install next-theme/hexo-next-exif --save && \
+    : && \
+    # Tools for posts
+    # npm install theme-next/hexo-next-coauthor --save && \
+    : && \
+    # Comment
+    npm install hexo-disqus-php-api --save && \
+    # npm install theme-next/hexo-next-utteranc --save && \
+    npm install hexo-next-minivaline@2 --save && \
+    # npm install hexo-next-discussbot --save && \
+    : && \
+    npm install 1v9/hexo-next-nightmode --save
 
 # deploy webhook plugins
 RUN set -ex && \
