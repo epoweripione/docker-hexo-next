@@ -3,7 +3,7 @@ FROM node:12-alpine3.12
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Version="12.18.3"
+    Version="12.19.0"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
@@ -24,8 +24,8 @@ RUN set -ex && \
 
 # nginx
 # mainline: https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.19.2
-ENV NJS_VERSION   0.4.3
+ENV NGINX_VERSION 1.19.3
+ENV NJS_VERSION   0.4.4
 ENV PKG_RELEASE   1
 
 RUN set -x \
@@ -257,6 +257,7 @@ RUN set -ex && \
     npm install hexo-filter-emoji --save && \
     npm install hexo-pangu --save && \
     npm install hexo-filter-mathjax --save && \
+    npm install hexo-renderer-ruby-sass --save && \
     : && \
     npm install hexo-word-counter --save && \
     npm install hexo-symbols-count-time --save && \
@@ -276,6 +277,7 @@ RUN set -ex && \
     : && \
     # Tools for posts
     # npm install theme-next/hexo-next-coauthor --save && \
+    # npm install theme-next/hexo-next-share --save && \
     : && \
     # Comment
     npm install hexo-disqus-php-api --save && \
