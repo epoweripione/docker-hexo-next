@@ -1,9 +1,9 @@
-FROM node:12-alpine3.12
+FROM node:lts-alpine3.12
 
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Version="12.19.0"
+    Version="14.15.0"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
@@ -24,7 +24,7 @@ RUN set -ex && \
 
 # nginx
 # mainline: https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.19.3
+ENV NGINX_VERSION 1.19.4
 ENV NJS_VERSION   0.4.4
 ENV PKG_RELEASE   1
 
