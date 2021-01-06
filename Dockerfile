@@ -3,7 +3,7 @@ FROM node:lts-alpine3.12
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Version="14.15.1"
+    Version="14.15.4"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
@@ -24,8 +24,8 @@ RUN set -ex && \
 
 # nginx
 # mainline: https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.19.5
-ENV NJS_VERSION   0.4.4
+ENV NGINX_VERSION 1.19.6
+ENV NJS_VERSION   0.5.0
 ENV PKG_RELEASE   1
 
 RUN set -x \
@@ -142,7 +142,7 @@ RUN set -ex && \
 
 ## node
 ## https://github.com/mhart/alpine-node
-# ENV VERSION=v14.15.1 NPM_VERSION=6 YARN_VERSION=v1.22.10 NODE_BUILD_PYTHON=python3
+# ENV VERSION=v14.15.4 NPM_VERSION=6 YARN_VERSION=v1.22.10 NODE_BUILD_PYTHON=python3
 
 # RUN apk upgrade --no-cache -U && \
 #   apk add --no-cache curl make gcc g++ ${NODE_BUILD_PYTHON} linux-headers binutils-gold gnupg libstdc++
@@ -270,6 +270,7 @@ RUN set -ex && \
     : && \
     # Widgets
     # npm install theme-next/theme-next-calendar --save && \
+    # npm install theme-next/hexo-cake-moon-menu --save && \
     : && \
     # Fancy stuff
     npm install next-theme/hexo-next-three --save && \
@@ -284,7 +285,8 @@ RUN set -ex && \
     # Comment
     npm install hexo-disqus-php-api --save && \
     # npm install theme-next/hexo-next-utteranc --save && \
-    npm install hexo-next-minivaline@2 --save && \
+    npm install hexo-next-minivaline --save && \
+    npm install @waline/hexo-next --save && \
     # npm install hexo-next-discussbot --save && \
     : && \
     npm install 1v9/hexo-next-nightmode --save
