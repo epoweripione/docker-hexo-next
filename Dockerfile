@@ -3,7 +3,7 @@ FROM node:lts-alpine3.12
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Version="14.15.4"
+    Version="14.15.5"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
