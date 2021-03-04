@@ -1,9 +1,9 @@
-FROM node:lts-alpine3.12
+FROM node:lts-alpine3.13
 
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Version="14.15.5"
+    Version="14.16.0"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
