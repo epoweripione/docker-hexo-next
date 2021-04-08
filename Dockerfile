@@ -3,7 +3,7 @@ FROM node:lts-alpine3.13
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Version="14.16.0"
+    Version="14.16.1"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
@@ -24,8 +24,8 @@ RUN set -ex && \
 
 # nginx
 # mainline: https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.19.6
-ENV NJS_VERSION   0.5.0
+ENV NGINX_VERSION 1.19.9
+ENV NJS_VERSION   0.5.3
 ENV PKG_RELEASE   1
 
 RUN set -x \
@@ -131,10 +131,11 @@ RUN set -x \
 
 
 # acme.sh
-ENV LE_WORKING_DIR=/opt/acme.sh
-
 RUN set -ex && \
-    curl -sSL https://get.acme.sh | sh && \
+    git clone --depth=1 https://github.com/acmesh-official/acme.sh.git /tmp/acme.sh && \
+    cd /tmp/acme.sh && \
+    ./acme.sh --install --home /opt/acme.sh --config-home /etc/nginx/ssl && \
+    cd ~ && \
     crontab -l | sed "s|acme.sh --cron|acme.sh --cron --renew-hook \"nginx -s reload\"|g" | crontab - && \
     ln -s /opt/acme.sh/acme.sh /usr/bin/acme.sh && \
     rm -rf /tmp/* /var/cache/apk/*
