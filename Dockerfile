@@ -3,7 +3,7 @@ FROM node:lts-alpine3.13
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Version="14.17.1"
+    Version="14.17.3"
 
 ENV TZ=Asia/Shanghai
 RUN set -ex && \
@@ -15,7 +15,7 @@ RUN set -ex && \
     cp /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone && \
     apk del tzdata && \
-    npm set registry https://registry.npm.taobao.org && \
+    # npm set registry https://registry.npm.taobao.org && \
     # PROXY_ADDRESS="127.0.0.1:1080" && \
     # git config --global http.proxy "socks5://${PROXY_ADDRESS}" && \
     # git config --global https.proxy "socks5://${PROXY_ADDRESS}" && \
