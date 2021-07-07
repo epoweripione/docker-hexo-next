@@ -24,8 +24,8 @@ RUN set -ex && \
 
 # nginx
 # mainline: https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.21.0
-ENV NJS_VERSION   0.5.3
+ENV NGINX_VERSION 1.21.1
+ENV NJS_VERSION   0.6.1
 ENV PKG_RELEASE   1
 
 RUN set -x \
