@@ -52,22 +52,22 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.PACKAGES_TOKEN }}
 
-      - name: Login to ACR
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
-        with:
-          registry: registry.cn-guangzhou.aliyuncs.com/siyuwuxin/hexo-next
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
-
-      # - name: Login to ACR
+      # - name: Login to Aliyun Container Registry (ACR)
       #   if: github.event_name != 'pull_request'
-      #   uses: aliyun/acr-login@v1
+      #   uses: docker/login-action@v1
       #   with:
-      #     login-server: https://registry.cn-guangzhou.aliyuncs.com/siyuwuxin/hexo-next
-      #     region-id: cn-guangzhou
+      #     registry: registry.cn-guangzhou.aliyuncs.com/siyuwuxin/hexo-next
       #     username: ${{ secrets.ACR_USERNAME }}
       #     password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Login to Aliyun Container Registry (ACR)
+        if: github.event_name != 'pull_request'
+        uses: aliyun/acr-login@v1
+        with:
+          login-server: https://registry.cn-guangzhou.aliyuncs.com
+          region-id: cn-guangzhou
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
       # - name: Test
       #   id: docker_test
@@ -78,7 +78,7 @@ jobs:
       #     file: ./Dockerfile
       #     target: test
 
-      - name: Build and push
+      - name: Build and push to GHCR
         id: docker_build
         uses: docker/build-push-action@v2
         with:
@@ -91,6 +91,10 @@ jobs:
           tags: ${{ steps.prep.outputs.tags }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Push image to Aliyun Container Registry (ACR)
+        run: |
+          docker push registry.cn-guangzhou.aliyuncs.com/siyuwuxin/hexo-next:latest
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
