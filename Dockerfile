@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM node:llts-alpine3.15
 
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
