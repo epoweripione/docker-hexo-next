@@ -5,7 +5,7 @@ LABEL Maintainer="Ansley Leung" \
     License="MIT License" \
     Nodejs="16.16.0" \
     Nginx="1.23.1" \
-    Version="8.12.2"
+    Version="8.12.3"
 
 RUN set -ex && \
     apk update && \
