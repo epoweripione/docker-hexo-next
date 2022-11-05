@@ -3,9 +3,9 @@ FROM node:lts-alpine3.16
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Nodejs="16.18.0" \
-    Nginx="1.23.1" \
-    Version="8.13.1"
+    Nodejs="18.12.0" \
+    Nginx="1.23.2" \
+    Version="8.13.2"
 
 RUN set -ex && \
     apk update && \
