@@ -10,7 +10,7 @@ LABEL Maintainer="Ansley Leung" \
 RUN set -ex && \
     apk update && \
     apk upgrade && \
-    apk add --no-cache coreutils ca-certificates curl git
+    apk add --no-cache coreutils ca-certificates curl git libc6-compat
 
 
 # nginx
@@ -220,7 +220,7 @@ RUN set -ex && \
     npm install next-theme/hexo-next-valine --save && \
     npm install @waline/hexo-next --save && \
     # npm install hexo-next-discussbot --save && \
-    npm install hexo-next-twikoo@1.0.1 --save && \
+    npm install hexo-next-twikoo@1.0.3 --save && \
     npm install hexo-next-giscus --save && \
     : && \
     npm install 1v9/hexo-next-nightmode --save
