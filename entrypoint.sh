@@ -6,6 +6,10 @@
 
 set -ex
 
+if [ ! -x "$(command -v hexo)" ]; then
+	/var/lib/hexo/install.sh
+fi
+
 # Init
 if [ ! -f "/opt/hexo/_config.yml" ]; then
 	hexo init .
