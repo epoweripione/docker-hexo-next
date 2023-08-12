@@ -3,7 +3,7 @@ FROM node:lts-alpine3.17
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Nodejs="18.16.1" \
+    Nodejs="18.17.1" \
     Nginx="1.25.1" \
     Version="8.17.1"
 
@@ -28,7 +28,7 @@ RUN set -ex && \
 # https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine-slim
 # https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
 ENV NGINX_VERSION 1.25.1
-ENV NJS_VERSION   0.7.12
+ENV NJS_VERSION   0.8.0
 ENV PKG_RELEASE   1
 
 RUN set -x \
