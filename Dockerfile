@@ -3,9 +3,9 @@ FROM node:lts-alpine3.18
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Nodejs="20.11.1" \
-    Nginx="1.25.4" \
-    Version="8.19.2"
+    Nodejs="20.13.1" \
+    Nginx="1.25.5" \
+    Version="8.20.0"
 
 # RUN OS_VERSION_ID=$(head -n1 /etc/alpine-release | cut -d'.' -f1-2) && \
 #     echo "https://mirror.sjtu.edu.cn/alpine/v${OS_VERSION_ID}/main" | tee "/etc/apk/repositories" && \
@@ -27,9 +27,10 @@ RUN set -ex && \
 # mainline:
 # https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine-slim
 # https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.25.4
-ENV NJS_VERSION   0.8.3
+ENV NGINX_VERSION 1.25.5
 ENV PKG_RELEASE   1
+ENV NJS_VERSION   0.8.4
+ENV NJS_RELEASE   3
 
 RUN set -x \
 # create nginx user/group first, to be consistent throughout docker variants
@@ -41,7 +42,7 @@ RUN set -x \
         nginx-module-xslt=${NGINX_VERSION}-r${PKG_RELEASE} \
         nginx-module-geoip=${NGINX_VERSION}-r${PKG_RELEASE} \
         nginx-module-image-filter=${NGINX_VERSION}-r${PKG_RELEASE} \
-        nginx-module-njs=${NGINX_VERSION}.${NJS_VERSION}-r${PKG_RELEASE} \
+        nginx-module-njs=${NGINX_VERSION}.${NJS_VERSION}-r${NJS_RELEASE} \
     " \
 # install prerequisites for public key and pkg-oss checks
     && apk add --no-cache --virtual .checksum-deps \
@@ -87,7 +88,7 @@ RUN set -x \
                 export HOME=${tempDir} \
                 && cd ${tempDir} \
                 && curl -f -O https://hg.nginx.org/pkg-oss/archive/${NGINX_VERSION}-${PKG_RELEASE}.tar.gz \
-                && PKGOSSCHECKSUM=\"79bf214256bf55700c776a87abfc3cf542323a267d879e89110aa44b551d12f6df7d56676a68f255ebbb54275185980d1fa37075f000d98e0ecac28db9e89fe3 *${NGINX_VERSION}-${PKG_RELEASE}.tar.gz\" \
+                && PKGOSSCHECKSUM=\"74000f32ab250be492a8ae4d408cd63a4c422f4f0af84689973a2844fceeb8a3e7e12b04d7c6dac0f993d7102d920a5f60e6f49be23ce4093f48a8eb1ae36ce5 *${NGINX_VERSION}-${PKG_RELEASE}.tar.gz\" \
                 && if [ \"\$(openssl sha512 -r ${NGINX_VERSION}-${PKG_RELEASE}.tar.gz)\" = \"\$PKGOSSCHECKSUM\" ]; then \
                     echo \"pkg-oss tarball checksum verification succeeded!\"; \
                 else \
