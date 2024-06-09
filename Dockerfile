@@ -162,7 +162,8 @@ COPY ./deploy.sh /var/lib/hexo/deploy.sh
 COPY ./entrypoint.sh /entrypoint.sh
 
 # hexo & theme
-RUN /var/lib/hexo/install.sh
+RUN chmod +x /var/lib/hexo/install.sh && \
+    /var/lib/hexo/install.sh
 
 WORKDIR /opt/hexo
 
