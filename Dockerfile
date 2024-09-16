@@ -29,8 +29,9 @@ RUN set -ex && \
 # https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
 ENV NGINX_VERSION 1.27.1
 ENV PKG_RELEASE   1
+ENV DYNPKG_RELEASE  2
 ENV NJS_VERSION   0.8.5
-ENV NJS_RELEASE   2
+ENV NJS_RELEASE   1
 
 RUN set -x \
 # create nginx user/group first, to be consistent throughout docker variants
@@ -39,9 +40,9 @@ RUN set -x \
     && apkArch="$(cat /etc/apk/arch)" \
     && nginxPackages=" \
         nginx=${NGINX_VERSION}-r${PKG_RELEASE} \
-        nginx-module-xslt=${NGINX_VERSION}-r${PKG_RELEASE} \
-        nginx-module-geoip=${NGINX_VERSION}-r${PKG_RELEASE} \
-        nginx-module-image-filter=${NGINX_VERSION}-r${PKG_RELEASE} \
+        nginx-module-xslt=${NGINX_VERSION}-r${DYNPKG_RELEASE} \
+        nginx-module-geoip=${NGINX_VERSION}-r${DYNPKG_RELEASE} \
+        nginx-module-image-filter=${NGINX_VERSION}-r${DYNPKG_RELEASE} \
         nginx-module-njs=${NGINX_VERSION}.${NJS_VERSION}-r${NJS_RELEASE} \
     " \
 # install prerequisites for public key and pkg-oss checks
