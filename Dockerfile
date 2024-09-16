@@ -1,10 +1,10 @@
-FROM node:lts-alpine3.18
+FROM node:lts-alpine3.20
 
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Nodejs="20.14.0" \
-    Nginx="1.27.0" \
+    Nodejs="20.17.0" \
+    Nginx="1.27.1" \
     Version="8.20.0"
 
 # RUN OS_VERSION_ID=$(head -n1 /etc/alpine-release | cut -d'.' -f1-2) && \
@@ -27,9 +27,9 @@ RUN set -ex && \
 # mainline:
 # https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine-slim
 # https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.27.0
+ENV NGINX_VERSION 1.27.1
 ENV PKG_RELEASE   1
-ENV NJS_VERSION   0.8.4
+ENV NJS_VERSION   0.8.5
 ENV NJS_RELEASE   2
 
 RUN set -x \
@@ -84,11 +84,12 @@ RUN set -x \
                 bash \
                 alpine-sdk \
                 findutils \
+                curl \
             && su nobody -s /bin/sh -c " \
                 export HOME=${tempDir} \
                 && cd ${tempDir} \
                 && curl -f -O https://hg.nginx.org/pkg-oss/archive/${NGINX_VERSION}-${PKG_RELEASE}.tar.gz \
-                && PKGOSSCHECKSUM=\"2f9549ce411a639e837720b63ff76887631c5bf3c5603e771df18d651d01c3d1719b252bbad90b94043983d44b44a84e0dac3851ee4426f170334def1eb8e08a *${NGINX_VERSION}-${PKG_RELEASE}.tar.gz\" \
+                && PKGOSSCHECKSUM=\"b9fbdf1779186fc02aa59dd87597fe4e906892391614289a4e6eedba398a3e770347b5b07110cca8c11fa3ba85bb711626ae69832e74c69ca8340d040a465907 *${NGINX_VERSION}-${PKG_RELEASE}.tar.gz\" \
                 && if [ \"\$(openssl sha512 -r ${NGINX_VERSION}-${PKG_RELEASE}.tar.gz)\" = \"\$PKGOSSCHECKSUM\" ]; then \
                     echo \"pkg-oss tarball checksum verification succeeded!\"; \
                 else \
@@ -113,6 +114,8 @@ RUN set -x \
     && if [ -n "$tempDir" ]; then rm -rf "$tempDir"; fi \
     && if [ -f "/etc/apk/keys/abuild-key.rsa.pub" ]; then rm -f /etc/apk/keys/abuild-key.rsa.pub; fi \
     && if [ -f "/etc/apk/keys/nginx_signing.rsa.pub" ]; then rm -f /etc/apk/keys/nginx_signing.rsa.pub; fi \
+# Bring in curl and ca-certificates to make registering on DNS SD easier
+    && apk add --no-cache curl ca-certificates \
 # Bring in gettext so we can get `envsubst`, then throw
 # the rest away. To do this, we need to install `gettext`
 # then move `envsubst` out of the way so `gettext` can
