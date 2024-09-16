@@ -14,13 +14,13 @@ LABEL Maintainer="Ansley Leung" \
 RUN set -ex && \
     apk update && \
     apk upgrade && \
-    apk add --no-cache coreutils ca-certificates curl git libc6-compat && \
-    apkArch="$(cat /etc/apk/arch)" && \
-    case "$apkArch" in \
-        x86_64) \
-            [ -f "/lib64/ld-linux-x86-64.so.2" ] && cp /lib64/ld-linux-x86-64.so.2 /lib/ \
-            ;; \
-    esac
+    apk add --no-cache coreutils ca-certificates curl git libc6-compat
+    # apkArch="$(cat /etc/apk/arch)" && \
+    # case "$apkArch" in \
+    #     x86_64) \
+    #         [ -f "/lib64/ld-linux-x86-64.so.2" ] && cp /lib64/ld-linux-x86-64.so.2 /lib/ \
+    #         ;; \
+    # esac
 
 
 # nginx
