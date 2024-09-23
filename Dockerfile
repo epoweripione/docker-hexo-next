@@ -5,7 +5,7 @@ LABEL Maintainer="Ansley Leung" \
     License="MIT License" \
     Nodejs="20.17.0" \
     Nginx="1.27.1" \
-    Version="8.20.0"
+    Version="8.21.0"
 
 # RUN OS_VERSION_ID=$(head -n1 /etc/alpine-release | cut -d'.' -f1-2) && \
 #     echo "https://mirror.sjtu.edu.cn/alpine/v${OS_VERSION_ID}/main" | tee "/etc/apk/repositories" && \
