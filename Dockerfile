@@ -3,9 +3,9 @@ FROM node:lts-alpine3.20
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Nodejs="20.18.1" \
+    Nodejs="22.12.0" \
     Nginx="1.27.3" \
-    Version="8.21.1"
+    Version="8.22.0"
 
 # RUN OS_VERSION_ID=$(head -n1 /etc/alpine-release | cut -d'.' -f1-2) && \
 #     echo "https://mirror.sjtu.edu.cn/alpine/v${OS_VERSION_ID}/main" | tee "/etc/apk/repositories" && \
@@ -30,7 +30,7 @@ RUN set -ex && \
 ENV NGINX_VERSION 1.27.3
 ENV PKG_RELEASE   1
 ENV DYNPKG_RELEASE  1
-ENV NJS_VERSION   0.8.7
+ENV NJS_VERSION   0.8.8
 ENV NJS_RELEASE   1
 
 RUN set -x \
@@ -90,7 +90,7 @@ RUN set -x \
                 export HOME=${tempDir} \
                 && cd ${tempDir} \
                 && curl -f -O https://hg.nginx.org/pkg-oss/archive/${NGINX_VERSION}-${PKG_RELEASE}.tar.gz \
-                && PKGOSSCHECKSUM=\"5617feecfb441cd972b9ac51a2fd78384a3d2bde2f399163be0746d44ec8f7d8c47234af4f6b0012667c3d0446cced521f55f8f71254415e3766c2e3802bf960 *${NGINX_VERSION}-${PKG_RELEASE}.tar.gz\" \
+                && PKGOSSCHECKSUM=\"1e546bd15d7bc68e1772ecb6a73e29ba108ee5554a28928e57af038a9e8fc4f5cd35708ce89ad1dfaac97d870e663d32ef41045611d30b20d38b46816e3ab535 *${NGINX_VERSION}-${PKG_RELEASE}.tar.gz\" \
                 && if [ \"\$(openssl sha512 -r ${NGINX_VERSION}-${PKG_RELEASE}.tar.gz)\" = \"\$PKGOSSCHECKSUM\" ]; then \
                     echo \"pkg-oss tarball checksum verification succeeded!\"; \
                 else \
