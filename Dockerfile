@@ -1,11 +1,11 @@
-FROM node:lts-alpine3.20
+FROM node:lts-alpine3.21
 
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
     Nodejs="22.14.0" \
     Nginx="1.27.4" \
-    Version="8.22.0"
+    Version="8.23.0"
 
 # RUN OS_VERSION_ID=$(head -n1 /etc/alpine-release | cut -d'.' -f1-2) && \
 #     echo "https://mirror.sjtu.edu.cn/alpine/v${OS_VERSION_ID}/main" | tee "/etc/apk/repositories" && \
