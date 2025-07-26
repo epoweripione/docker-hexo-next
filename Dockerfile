@@ -1,10 +1,10 @@
-FROM node:lts-alpine3.21
+FROM node:lts-alpine3.22
 
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Nodejs="22.14.0" \
-    Nginx="1.27.4" \
+    Nodejs="22.17.1" \
+    Nginx="1.29.0" \
     Version="8.23.0"
 
 # RUN OS_VERSION_ID=$(head -n1 /etc/alpine-release | cut -d'.' -f1-2) && \
@@ -27,11 +27,11 @@ RUN set -ex && \
 # mainline:
 # https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine-slim
 # https://github.com/nginxinc/docker-nginx/tree/master/mainline/alpine
-ENV NGINX_VERSION 1.27.4
-ENV PKG_RELEASE   1
-ENV DYNPKG_RELEASE  1
-ENV NJS_VERSION   0.8.9
-ENV NJS_RELEASE   1
+ENV NGINX_VERSION=1.29.0
+ENV PKG_RELEASE=1
+ENV DYNPKG_RELEASE=1
+ENV NJS_VERSION=0.9.0
+ENV NJS_RELEASE=1
 
 RUN set -x \
 # create nginx user/group first, to be consistent throughout docker variants
@@ -90,7 +90,7 @@ RUN set -x \
                 export HOME=${tempDir} \
                 && cd ${tempDir} \
                 && curl -f -O https://hg.nginx.org/pkg-oss/archive/${NGINX_VERSION}-${PKG_RELEASE}.tar.gz \
-                && PKGOSSCHECKSUM=\"973690e64fa47e3704e817a3b08205b9e3f8c0cbe31825d9d62a81c11eb3aa186df015f27fdfd48c8799ffc528e38a9168c592ae665e4835c2d28638ec5f7845 *${NGINX_VERSION}-${PKG_RELEASE}.tar.gz\" \
+                && PKGOSSCHECKSUM=\"400593da45fc0195a01138c0c23a06059da1c6a2e26959f2c4c95fbaf63436ff211665ef01392d2b775a0133d5b57680dabe51b840a55f82e89621e84cf651d1 *${NGINX_VERSION}-${PKG_RELEASE}.tar.gz\" \
                 && if [ \"\$(openssl sha512 -r ${NGINX_VERSION}-${PKG_RELEASE}.tar.gz)\" = \"\$PKGOSSCHECKSUM\" ]; then \
                     echo \"pkg-oss tarball checksum verification succeeded!\"; \
                 else \
