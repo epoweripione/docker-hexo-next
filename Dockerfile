@@ -3,13 +3,18 @@ FROM node:lts-alpine3.22
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Nodejs="22.18.0" \
+    Nodejs="22.19.0" \
     Nginx="1.29.1" \
     Version="8.23.0"
 
 # RUN OS_VERSION_ID=$(head -n1 /etc/alpine-release | cut -d'.' -f1-2) && \
 #     echo "https://mirror.sjtu.edu.cn/alpine/v${OS_VERSION_ID}/main" | tee "/etc/apk/repositories" && \
 #     echo "https://mirror.sjtu.edu.cn/alpine/v${OS_VERSION_ID}/community" | tee -a "/etc/apk/repositories"
+
+RUN set -x \
+# create nginx user/group first, to be consistent throughout docker variants
+    && addgroup -g 101 -S nginx \
+    && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx 
 
 RUN set -ex && \
     apk update && \
@@ -34,10 +39,7 @@ ENV NJS_VERSION=0.9.1
 ENV NJS_RELEASE=1
 
 RUN set -x \
-# create nginx user/group first, to be consistent throughout docker variants
-    && addgroup -g 101 -S nginx \
-    && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
-    && apkArch="$(cat /etc/apk/arch)" \
+    apkArch="$(cat /etc/apk/arch)" \
     && nginxPackages=" \
         nginx=${NGINX_VERSION}-r${PKG_RELEASE} \
         nginx-module-xslt=${NGINX_VERSION}-r${DYNPKG_RELEASE} \
