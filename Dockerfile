@@ -39,7 +39,7 @@ ENV NJS_VERSION=0.9.1
 ENV NJS_RELEASE=1
 
 RUN set -x \
-    apkArch="$(cat /etc/apk/arch)" \
+    && apkArch="$(cat /etc/apk/arch)" \
     && nginxPackages=" \
         nginx=${NGINX_VERSION}-r${PKG_RELEASE} \
         nginx-module-xslt=${NGINX_VERSION}-r${DYNPKG_RELEASE} \
@@ -72,8 +72,10 @@ RUN set -x \
             && tempDir="$(mktemp -d)" \
             && chown nobody:nobody $tempDir \
             && apk add --no-cache --virtual .build-deps \
+                build-base \
                 gcc \
                 libc-dev \
+                cmake \
                 make \
                 openssl-dev \
                 pcre2-dev \
@@ -84,6 +86,8 @@ RUN set -x \
                 geoip-dev \
                 perl-dev \
                 libedit-dev \
+                grpc-dev \
+                protobuf-dev \
                 bash \
                 alpine-sdk \
                 findutils \
