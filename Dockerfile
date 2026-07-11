@@ -3,9 +3,9 @@ FROM node:lts-alpine3.23
 LABEL Maintainer="Ansley Leung" \
     Description="Hexo with theme NexT: Auto generate and deploy website use GITHUB webhook" \
     License="MIT License" \
-    Nodejs="24.16.0" \
+    Nodejs="24.18.0" \
     Nginx="1.31.2" \
-    Version="8.27.0"
+    Version="8.28.0"
 
 # RUN OS_VERSION_ID=$(head -n1 /etc/alpine-release | cut -d'.' -f1-2) && \
 #     echo "https://mirror.sjtu.edu.cn/alpine/v${OS_VERSION_ID}/main" | tee "/etc/apk/repositories" && \
