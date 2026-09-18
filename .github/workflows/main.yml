@@ -14,7 +14,7 @@ jobs:
       # GitHub Actions do not automatically checkout your projects. If you need the code
       # you need to check it out.
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Prepare
         id: prep
@@ -30,29 +30,29 @@ jobs:
           fi
           TAGS="${GHCR_IMAGE}:${VERSION}"
           TAGS="$TAGS,${GHCR_IMAGE}:latest,${ACR_IMAGE}:latest"
-          echo ::set-output name=tags::${TAGS}
+          echo "tags=${TAGS}" >> $GITHUB_OUTPUT
 
       - name: Setup QEMU
         id: qemu
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: amd64,arm64
 
       - name: Setup Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v4
 
       - name: Cache Docker layers
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
-          path: /tmp/.buildx-cache
+          path: ${{ runner.temp }}/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
 
       - name: Login to ghcr
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@v2
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
@@ -60,7 +60,7 @@ jobs:
 
       - name: Login to Aliyun Container Registry (ACR)
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@v2
+        uses: docker/login-action@v4
         with:
           registry: registry.cn-guangzhou.aliyuncs.com/siyuwuxin/hexo-next
           username: ${{ secrets.ACR_USERNAME }}
@@ -68,7 +68,7 @@ jobs:
 
       - name: Build and push
         id: docker_build
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v7
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
@@ -78,8 +78,12 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.prep.outputs.tags }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          # buildx cache
+          cache-from: type=local,src=${{ runner.temp }}/.buildx-cache
+          cache-to: type=local,dest=${{ runner.temp }}/.buildx-cache,mode=max,reset=true
+          # Alibaba Cloud ACR does not accept BuildKit attestation manifests.
+          provenance: false
+          sbom: false
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
